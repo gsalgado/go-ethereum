@@ -25,8 +25,11 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/urfave/cli.v1"
+
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/consensys"
 	"github.com/ethereum/go-ethereum/console"
 	"github.com/ethereum/go-ethereum/contracts/release"
 	"github.com/ethereum/go-ethereum/eth"
@@ -37,7 +40,6 @@ import (
 	"github.com/ethereum/go-ethereum/node"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rlp"
-	"gopkg.in/urfave/cli.v1"
 )
 
 const (
@@ -262,5 +264,17 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 		if err := ethereum.StartMining(ctx.GlobalInt(utils.MinerThreadsFlag.Name)); err != nil {
 			utils.Fatalf("Failed to start mining: %v", err)
 		}
+	}
+
+	identity := ctx.GlobalString(utils.IdentityFlag.Name)
+	if len(identity) == 0 {
+		identity = "undefined-id"
+	}
+	// FIXME: URL shoud be CLI argument
+	collector, err := consensys.NewMetricsCollector(stack.EventMux(), "http://localhost:8086", identity)
+	if err != nil {
+		glog.V(logger.Warn).Infoln("error setting up consensys metrics collector:", err)
+	} else {
+		collector.Start()
 	}
 }
