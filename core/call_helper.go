@@ -19,7 +19,7 @@ type privateTestTx struct {
 }
 
 // IsPrivate returns whether the transaction should be considered privat.
-func (ptx *privateTestTx) IsPrivate() bool { return ptx.private }
+func (ptx privateTestTx) IsPrivate() bool { return ptx.private }
 
 // callHelper makes it easier to do proper calls and use the state transition object.
 // It also manages the nonces of the caller and keeps private and public state, which
@@ -59,7 +59,7 @@ func (cg *callHelper) MakeCall(private bool, key *ecdsa.PrivateKey, to common.Ad
 	}
 
 	cg.header.Number = new(big.Int)
-	_, _, err = ApplyMessage(NewEnv(publicState, privateState, &ChainConfig{}, nil, ptx.Transaction, &cg.header, vm.Config{}), ptx, cg.gp)
+	_, _, err = ApplyMessage(NewEnv(publicState, privateState, &ChainConfig{}, nil, ptx, &cg.header, vm.Config{}), ptx, cg.gp)
 	if err != nil {
 		return err
 	}

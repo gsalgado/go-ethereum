@@ -31,6 +31,10 @@ matrix:
 
 install:
   - go get golang.org/x/tools/cmd/cover
+  - wget -q https://github.com/jpmorganchase/constellation/releases/download/v0.0.1-alpha/ubuntu1604.zip -O /tmp/ubuntu1604.zip
+  - unzip -d /tmp /tmp/ubuntu1604.zip
+  - cp /tmp/ubuntu1604/constellation-node /usr/local/bin && chmod 0755 /usr/local/bin/constellation-node
+  - cp /tmp/ubuntu1604/constellation-enclave-keygen /usr/local/bin && chmod 0755 /usr/local/bin/constellation-enclave-keygen
 script:
   - go run build/ci.go install
   - go run build/ci.go test -coverage -vet
